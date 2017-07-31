@@ -31,7 +31,8 @@ public class SystemUserConfigurer extends WebSecurityConfigurerAdapter {
     http.httpBasic();
     http.csrf().disable();
     http.headers().frameOptions().sameOrigin();
-    http.authorizeRequests().anyRequest().hasAnyRole(USER_ROLE);
+    http.authorizeRequests().antMatchers("/openapi/*").permitAll().antMatchers("/*")
+        .hasAnyRole(USER_ROLE);
     http.formLogin();
     http.logout().invalidateHttpSession(true).clearAuthentication(true);
   }
@@ -45,4 +46,5 @@ public class SystemUserConfigurer extends WebSecurityConfigurerAdapter {
     auth.jdbcAuthentication().dataSource(datasource).usersByUsernameQuery(
         "select username,password, enabled from Users where username=?");
   }
+
 }
