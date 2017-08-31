@@ -1,4 +1,4 @@
-package com.ctrip.framework.apollo.portal.configuration;
+package com.ctrip.framework.apollo.portal.spi.springsecurity;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Order(99)
-@Profile({"!ctrip"})
+@Profile({"auth"})
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SystemUserConfigurer extends WebSecurityConfigurerAdapter {
+public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
   public static final String USER_ROLE = "user";
 
@@ -28,13 +29,15 @@ public class SystemUserConfigurer extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.httpBasic();
     http.csrf().disable();
     http.headers().frameOptions().sameOrigin();
-    http.authorizeRequests().antMatchers("/openapi/*").permitAll().antMatchers("/*")
-        .hasAnyRole(USER_ROLE);
-    http.formLogin();
-    http.logout().invalidateHttpSession(true).clearAuthentication(true);
+    http.authorizeRequests()
+        .antMatchers("/resources/**").permitAll()
+        .antMatchers("/openapi/*").permitAll()
+        .antMatchers("/*").hasAnyRole(USER_ROLE);
+    http.formLogin().loginPage("/clogin").permitAll().failureUrl("/clogin").and().httpBasic();
+    http.logout().invalidateHttpSession(true).clearAuthentication(true).logoutSuccessUrl("/clogin?logout");
+    http.exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/clogin"));
   }
 
   @Autowired

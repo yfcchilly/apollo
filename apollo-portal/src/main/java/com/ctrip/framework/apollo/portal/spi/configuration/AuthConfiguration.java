@@ -13,6 +13,8 @@ import com.ctrip.framework.apollo.portal.spi.ctrip.CtripUserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.ctrip.CtripUserService;
 import com.ctrip.framework.apollo.portal.spi.defaultimpl.DefaultLogoutHandler;
 import com.ctrip.framework.apollo.portal.spi.defaultimpl.DefaultSsoHeartbeatHandler;
+import com.ctrip.framework.apollo.portal.spi.defaultimpl.DefaultUserInfoHolder;
+import com.ctrip.framework.apollo.portal.spi.defaultimpl.DefaultUserService;
 import com.ctrip.framework.apollo.portal.spi.springsecurity.SpringSecurityUserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.springsecurity.SpringSecurityUserService;
 
@@ -173,12 +175,9 @@ public class AuthConfiguration {
   }
 
 
-  /**
-   * spring.profiles.active != ctrip
-   */
   @Configuration
-  @Profile({"!ctrip"})
-  static class DefaultAuthAutoConfiguration {
+  @Profile({"auth"})
+  static class SpringSecurityAuthAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SsoHeartbeatHandler.class)
@@ -210,6 +209,36 @@ public class AuthConfiguration {
     @ConditionalOnMissingBean(UserService.class)
     public UserService springSecurityUserService() {
       return new SpringSecurityUserService();
+    }
+
+  }
+
+  @Configuration
+  @Profile({"github"})
+  static class DefaultAuthAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(SsoHeartbeatHandler.class)
+    public SsoHeartbeatHandler defaultSsoHeartbeatHandler() {
+      return new DefaultSsoHeartbeatHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UserInfoHolder.class)
+    public UserInfoHolder defaultUserInfoHolder() {
+      return new DefaultUserInfoHolder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LogoutHandler.class)
+    public LogoutHandler logoutHandler() {
+      return new DefaultLogoutHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UserService.class)
+    public UserService springSecurityUserService() {
+      return new DefaultUserService();
     }
 
   }
