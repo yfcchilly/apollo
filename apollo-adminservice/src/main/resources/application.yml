@@ -3,7 +3,13 @@ spring:
     name: apollo-adminservice
   profiles:
     active: ${apollo_profile}
-
+  cloud:
+    inetutils:
+      ignoredInterfaces:
+        - docker0
+        - br-.*
+        - veth.*
+        - enp1s0f0
 ctrip:
   appid: 100003172
   
