@@ -10,7 +10,7 @@ spring:
         - br-.*
         - veth.*
         - enp1s0f0
-
+        - lo
 server:
   port: 8080
   

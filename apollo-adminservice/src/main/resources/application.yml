@@ -10,6 +10,7 @@ spring:
         - br-.*
         - veth.*
         - enp1s0f0
+        - lo
 ctrip:
   appid: 100003172
   
